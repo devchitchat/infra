@@ -27,7 +27,13 @@ RUN bun install --frozen-lockfile --production
 
 COPY src/ ./src/
 
-# Configure SSH to not reject unknown hosts (gitops repo is trusted)
-RUN mkdir -p /root/.ssh && echo "StrictHostKeyChecking accept-new" > /root/.ssh/config
+# Configure SSH for the bun user and transfer ownership of /app before dropping root.
+RUN mkdir -p /home/bun/.ssh \
+    && echo "StrictHostKeyChecking accept-new" > /home/bun/.ssh/config \
+    && chown -R bun:bun /home/bun/.ssh \
+    && chmod 700 /home/bun/.ssh \
+    && chown -R bun:bun /app
+
+USER bun
 
 CMD ["bun", "start"]
