@@ -1,0 +1,7 @@
+node_modules/
+.env
+.env.local
+.claude
+
+# compiled binary (bun build --compile)
+infra

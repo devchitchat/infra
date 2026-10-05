@@ -1,0 +1,27 @@
+{
+  "name": "infra",
+  "version": "0.1.0",
+  "description": "CLI for managing the local k3s cluster and deploying apps",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "infra": "./cli.ts"
+  },
+  "scripts": {
+    "typecheck": "bunx tsc --noEmit",
+    "compile": "bun build --compile ./cli.ts --outfile infra",
+    "install:bin": "bun run compile && sudo cp infra /usr/local/bin/infra",
+    "runner:push": "./cicd/mesh-ci-runner/deploy.sh",
+    "controller:push": "./cicd/mesh-gitops-controller/deploy.sh",
+    "prune": "kubectl exec -n ci deploy/mesh-ci-runner -c mesh -- docker system prune -af"
+  },
+  "dependencies": {
+    "yaml": "^2.7.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

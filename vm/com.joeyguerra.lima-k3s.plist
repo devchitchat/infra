@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!--
+        LaunchDaemon — runs at system boot, before any user logs in.
+
+        Key differences from a LaunchAgent:
+          - Loaded by launchd at boot (not at login)
+          - Persists across logouts and survives power outages / auto-restarts
+          - UserName below makes it run as 'joeyguerra' so it can reach ~/.lima and ~/.kube
+    -->
+    <key>Label</key>
+    <string>com.joeyguerra.lima-k3s</string>
+
+    <key>UserName</key>
+    <string>joeyguerra</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/env</string>
+        <string>bash</string>
+        <string>/Users/joeyguerra/src/local-k8s/vm/start-lima-k3s.sh</string>
+    </array>
+
+    <!-- Run once at load (boot). Lima's QEMU process stays alive in the background. -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <false/>
+
+    <!-- Restart this launcher script if it crashes (not the same as the VM itself) -->
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOME</key>
+        <string>/Users/joeyguerra</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <key>LIMA_HOME</key>
+        <string>/Users/joeyguerra/.lima</string>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/var/log/lima-k3s.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/var/log/lima-k3s.log</string>
+</dict>
+</plist>

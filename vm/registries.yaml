@@ -1,0 +1,12 @@
+# k3s containerd registry configuration
+#
+# This file must be placed at /etc/rancher/k3s/registries.yaml inside the
+# Lima VM, then k3s restarted. The bootstrap-mesh.sh script does this.
+#
+# registry.local:5000 is the in-cluster registry (registry:2) deployed in
+# mesh-system, exposed as NodePort 30500. Since containerd runs on the k3s
+# node (inside Lima), localhost:30500 reaches the NodePort directly.
+mirrors:
+  "registry.local:5000":
+    endpoint:
+      - "http://localhost:30500"

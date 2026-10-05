@@ -1,0 +1,60 @@
+# Lima VM configuration for k3s
+#
+# Uses QEMU instead of VZ (Apple Virtualization) so Lima can be started
+# from a LaunchDaemon at boot — before any user session exists.
+# VZ requires a user session context; QEMU does not.
+#
+# Apply with:  limactl create --name=k3s k3s-lima.yaml
+
+vmType: "qemu"
+os: "Linux"
+cpus: 2
+memory: "4GiB"
+disk: "40GiB"
+timeoutSeconds: 1200
+
+images:
+  - location: "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-arm64.img"
+    arch: "aarch64"
+
+provision:
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -eux
+      if command -v k3s &>/dev/null; then
+        echo "k3s already installed, skipping"
+        exit 0
+      fi
+      # Disable traefik — we use Cloudflare tunnel instead of an ingress controller
+      curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --disable=traefik" sh -
+      # Make kubeconfig world-readable so scripts can copy it without sudo
+      echo 'K3S_KUBECONFIG_MODE="644"' >> /etc/systemd/system/k3s.service.env || true
+      systemctl daemon-reload
+      systemctl restart k3s
+
+# Lima automatically copies this file from the guest to the host at
+# ~/.lima/k3s/copied-from-guest/k3s.yaml whenever the VM starts.
+copyToHost:
+  - guest: "/etc/rancher/k3s/k3s.yaml"
+    host: "{{.Dir}}/copied-from-guest/k3s.yaml"
+    deleteOnStop: true
+
+# Forward the k3s API server so kubectl on the Mac talks to it at 127.0.0.1:6443
+portForwards:
+  - guestPort: 6443
+    hostPort: 6443
+    hostIP: "127.0.0.1"
+    guestIP: "0.0.0.0"
+    proto: "tcp"
+
+  # Forward in-cluster registry NodePort for image pushes from the host.
+  # Port 5000 is taken by macOS AirPlay; use 5050 instead.
+  - guestPort: 30500
+    hostPort: 5050
+    hostIP: "127.0.0.1"
+    proto: "tcp"
+
+mounts:
+  - location: "/tmp/lima"
+    writable: true

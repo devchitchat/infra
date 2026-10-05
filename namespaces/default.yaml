@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  labels:
+    # Enforce the "baseline" PodSecurity profile, which blocks hostPath volumes
+    # and other known privilege escalations without requiring non-root or seccomp.
+    # This prevents pods from mounting the host home directory, which is exposed
+    # into the Lima VM by default and accessible to all pods via hostPath.
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/warn: restricted
