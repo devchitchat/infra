@@ -15,7 +15,7 @@
     <array>
         <string>/usr/bin/env</string>
         <string>bash</string>
-        <string>/Users/joeyguerra/src/local-k8s/vm/start-colima.sh</string>
+        <string>/Users/joeyguerra/src/infra/vm/start-colima.sh</string>
     </array>
 
     <key>RunAtLoad</key>

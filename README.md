@@ -1,4 +1,4 @@
-# local-k8s
+# infra
 
 VM and cluster management for a Mac Mini running k3s via Lima, with GitOps deployments via the mesh stack.
 
@@ -146,7 +146,7 @@ kubectl apply -f platform/infra/apps-controller/rbac.yaml   # if RBAC changed
 kubectl apply -f platform/infra/ci-runner/deployment.yaml   # if pod spec changed
 
 # 2. Build and push images (order matters: mesh-ci-runner last)
-cd ../local-k8s
+cd ../infra
 ./cicd/registry-proxy/deploy.sh
 ./cicd/mesh-gitops-controller/deploy.sh
 ./cicd/mesh-ci-runner/deploy.sh   # last: entrypoint depends on volumes from the spec above
