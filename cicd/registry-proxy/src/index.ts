@@ -41,11 +41,17 @@ let activeRepo: string | null = null
 
 async function connectMeshSse(): Promise<void> {
   const url = `${MESH_URL}/ci/events`
+  // Track the last SSE event id so reconnects send Last-Event-ID, preventing
+  // the server from replaying already-processed events (which could cause
+  // stale terminal events to prematurely clear an active session).
+  let lastEventId: string | null = null
   while (true) {
     try {
+      const headers: Record<string, string> = { Accept: 'text/event-stream' }
+      if (lastEventId !== null) headers['Last-Event-ID'] = lastEventId
       console.log(`[session] connecting to mesh SSE at ${url}`)
       const res = await fetch(url, {
-        headers: { Accept: 'text/event-stream' },
+        headers,
         // @ts-ignore — Bun-specific: mesh uses a self-signed cert on localhost
         tls: { rejectUnauthorized: false },
       })
@@ -59,6 +65,7 @@ async function connectMeshSse(): Promise<void> {
       const decoder = new TextDecoder()
       let buf = ''
       let eventType = ''
+      let eventId = ''
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
@@ -66,7 +73,9 @@ async function connectMeshSse(): Promise<void> {
         const lines = buf.split('\n')
         buf = lines.pop() ?? ''
         for (const line of lines) {
-          if (line.startsWith('event:')) {
+          if (line.startsWith('id:')) {
+            eventId = line.slice(3).trim()
+          } else if (line.startsWith('event:')) {
             eventType = line.slice(6).trim()
           } else if (line.startsWith('data:') && eventType === 'run-changed') {
             try {
@@ -85,6 +94,11 @@ async function connectMeshSse(): Promise<void> {
             } catch { /* malformed data line */ }
             eventType = ''
           } else if (line === '') {
+            // End of event — commit the id
+            if (eventId) {
+              lastEventId = eventId
+              eventId = ''
+            }
             eventType = ''
           }
         }
@@ -248,6 +262,10 @@ const server = Bun.serve({
       }
       responseHeaders.delete('connection')
       responseHeaders.delete('transfer-encoding')
+
+      if (isPushRequest(method, url.pathname) && upstream.status >= 400) {
+        console.warn(`[UPSTREAM] ${method} ${url.pathname} → ${upstream.status}`)
+      }
 
       return new Response(upstream.body, {
         status:  upstream.status,
