@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>devchitchat — The Multi-Player AI App Building Platform</title>
+  <meta name="description" content="Build apps together with your team and AI agents. Self-hosted chat, GitOps CI/CD, and in-cluster Claude agents — all connected over a P2P mesh network." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="nav">
+    <div class="container nav__inner">
+      <a href="/" class="nav__logo">
+        <span class="logo-mark">dc</span>
+        <span class="logo-name">devchitchat</span>
+      </a>
+      <nav class="nav__links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#stack">Stack</a>
+        <a href="https://github.com/devchitchat/infra" class="btn btn--ghost" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero__inner">
+      <div class="hero__badge">Now open source</div>
+      <h1 class="hero__headline">
+        Build apps together —<br />
+        <span class="gradient-text">you, your team, and AI</span>
+      </h1>
+      <p class="hero__sub">
+        devchitchat is a self-hosted platform that puts AI coding agents inside your team's chat,
+        your CI/CD pipeline, and your Git workflow. Everyone works in the same room.
+        Nobody waits on a ticket.
+      </p>
+      <div class="hero__cta">
+        <a href="https://github.com/devchitchat/infra" class="btn btn--primary" target="_blank" rel="noopener">Get started on GitHub</a>
+        <a href="#how-it-works" class="btn btn--secondary">See how it works</a>
+      </div>
+      <div class="hero__diagram">
+        <div class="diagram">
+          <div class="diagram__node diagram__node--you">You</div>
+          <div class="diagram__node diagram__node--team">Team</div>
+          <div class="diagram__node diagram__node--hub">
+            <span class="diagram__hub-label">devchitchat</span>
+            <span class="diagram__hub-sub">chat · ops · CI/CD</span>
+          </div>
+          <div class="diagram__node diagram__node--agent">AI Agent</div>
+          <div class="diagram__node diagram__node--git">Git</div>
+          <svg class="diagram__lines" viewBox="0 0 480 220" xmlns="http://www.w3.org/2000/svg">
+            <!-- You → hub -->
+            <line x1="60" y1="50" x2="200" y2="110" stroke="url(#g1)" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <!-- Team → hub -->
+            <line x1="420" y1="50" x2="280" y2="110" stroke="url(#g2)" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <!-- Agent → hub -->
+            <line x1="60" y1="170" x2="200" y2="120" stroke="url(#g3)" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <!-- Git → hub -->
+            <line x1="420" y1="170" x2="280" y2="120" stroke="url(#g4)" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <defs>
+              <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
+              <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#6366f1"/></linearGradient>
+              <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#10b981"/></linearGradient>
+              <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#60a5fa"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PITCH -->
+  <section class="pitch">
+    <div class="container">
+      <p class="pitch__text">
+        Teams under delivery pressure don't need another project management tool.
+        They need a shared room where work is visible, AI is a first-class collaborator,
+        and shipping is the default.
+      </p>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="container">
+      <h2 class="section-title">Everything in one platform</h2>
+      <p class="section-sub">Six integrated pieces that make multi-player AI development feel natural.</p>
+
+      <div class="features__grid">
+
+        <div class="feature-card feature-card--wide">
+          <div class="feature-card__icon">💬</div>
+          <h3>Self-hosted team chat</h3>
+          <p>Real-time messaging with WebSocket streaming, video/audio/screen-share, file uploads, and push notifications. Runs on your hardware — no SaaS dependency, no data leaving your network.</p>
+          <div class="feature-card__tags">
+            <span>WebSocket</span><span>Video &amp; Audio</span><span>VAPID push</span><span>SQLite</span>
+          </div>
+        </div>
+
+        <div class="feature-card feature-card--wide">
+          <div class="feature-card__icon">🤖</div>
+          <h3>In-cluster AI agents</h3>
+          <p>Claude Code runs as a Kubernetes pod with direct filesystem and Git access. Send it a message in chat, watch it commit code, open PRs, and stream responses back — all without leaving your workflow.</p>
+          <div class="feature-card__tags">
+            <span>Claude Code</span><span>Git-native</span><span>Persistent workspace</span><span>Playwright</span>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">📋</div>
+          <h3>Operational log</h3>
+          <p>A daily reconciliation tool that closes the loop between intent and reality. Yesterday's work, today's focus, active surface. No auto-prioritization — just honest tracking.</p>
+          <div class="feature-card__tags">
+            <span>Standups</span><span>Drift tracking</span>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">⚡</div>
+          <h3>GitOps CI/CD</h3>
+          <p>Two-tier GitOps controllers — one for infrastructure, one for apps — poll your Git repos every 30 seconds and apply changes. No webhooks. No secrets in pipelines. No SSH keys.</p>
+          <div class="feature-card__tags">
+            <span>k3s</span><span>BuildKit mTLS</span><span>In-cluster registry</span>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">🌐</div>
+          <h3>P2P mesh network</h3>
+          <p>All nodes — host, CI runner, controllers, agent — connect over a decentralized mesh. Git repos are served peer-to-peer at port 7979. Invite once, persist forever in PVCs.</p>
+          <div class="feature-card__tags">
+            <span>P2P Git</span><span>SSE CI events</span><span>Self-signed TLS</span>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">🛡️</div>
+          <h3>Social gate</h3>
+          <p>AI agents can draft social posts but never see credentials or publish. Admins approve before anything goes live. Tokens are encrypted at rest. If the agent pod is compromised, your accounts stay safe.</p>
+          <div class="feature-card__tags">
+            <span>AES-256-GCM</span><span>Audit log</span><span>Human-in-loop</span>
+          </div>
+        </div>
+
+        <div class="feature-card feature-card--wide">
+          <div class="feature-card__icon">🔧</div>
+          <h3>ChatOps bot framework</h3>
+          <p>Canonical command IDs, declarative schemas, confirmation flows for side-effecting operations, ordered async middleware, and audit records. Build bots that are safe by default — adapters for Slack, Discord, Teams, and CLI included.</p>
+          <div class="feature-card__tags">
+            <span>Command-first</span><span>Permission checks</span><span>Multi-adapter</span><span>Audit records</span>
+          </div>
+        </div>
+
+        <div class="feature-card feature-card--wide">
+          <div class="feature-card__icon">🏗️</div>
+          <h3>Bun-native web framework</h3>
+          <p>index97 brings file-based routing, server-side templates, static site generation, built-in CSP, and HMR dev mode to Bun. Composable — run your website and chat on the same port. Published to npm.</p>
+          <div class="feature-card__tags">
+            <span>Bun</span><span>File-based routing</span><span>SSG</span><span>npm package</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how-it-works">
+    <div class="container">
+      <h2 class="section-title">How it works</h2>
+      <p class="section-sub">From a Mac mini boot to a deployed app — everything automated.</p>
+
+      <div class="how__steps">
+
+        <div class="how__step">
+          <div class="how__step-number">01</div>
+          <div class="how__step-body">
+            <h3>Boot the VM</h3>
+            <p>A LaunchDaemon starts Lima (QEMU, Ubuntu 24.04) at system boot — no login required. k3s comes up automatically. One command provisions the whole cluster.</p>
+            <pre><code>infra cluster setup</code></pre>
+          </div>
+        </div>
+
+        <div class="how__step">
+          <div class="how__step-number">02</div>
+          <div class="how__step-body">
+            <h3>Bootstrap GitOps</h3>
+            <p>Build and push the CI runner and GitOps controller images, deploy the in-cluster registry, run the mesh invite/join dance, and push the GitOps repo into the mesh network.</p>
+            <pre><code>infra cluster bootstrap</code></pre>
+          </div>
+        </div>
+
+        <div class="how__step">
+          <div class="how__step-number">03</div>
+          <div class="how__step-body">
+            <h3>Push code, watch it ship</h3>
+            <p>The mesh-gitops-controller polls your platform repo every 30 seconds. The apps-controller polls your app repo. Commit a manifest change and it's live within half a minute — no webhooks, no external CI service.</p>
+            <pre><code>git push origin main
+# → applied in &lt;30s</code></pre>
+          </div>
+        </div>
+
+        <div class="how__step">
+          <div class="how__step-number">04</div>
+          <div class="how__step-body">
+            <h3>Chat with your agent</h3>
+            <p>The Claude Code agent pod runs in your cluster with persistent workspace storage and full Git access over the mesh. Send it a task in chat, get code back. Your team sees everything in the same thread.</p>
+            <pre><code>@agent refactor the auth module
+         and open a PR</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SECURITY -->
+  <section class="security">
+    <div class="container">
+      <div class="security__inner">
+        <div class="security__text">
+          <h2>Secure by design, not by policy</h2>
+          <ul class="security__list">
+            <li>
+              <span class="security__check">✓</span>
+              <div>
+                <strong>Push scoping in CI</strong> — each pipeline can only push images whose name matches its repo. Enforced by a session-gated registry proxy, not trust.
+              </div>
+            </li>
+            <li>
+              <span class="security__check">✓</span>
+              <div>
+                <strong>BuildKit mTLS</strong> — arbitrary code inside the CI pod cannot connect to BuildKit without the client certificate generated at pod startup.
+              </div>
+            </li>
+            <li>
+              <span class="security__check">✓</span>
+              <div>
+                <strong>Two-tier RBAC</strong> — the GitOps controller has ClusterRole access; the apps controller is scoped to its namespace only.
+              </div>
+            </li>
+            <li>
+              <span class="security__check">✓</span>
+              <div>
+                <strong>No SSH keys</strong> — Git access goes through the P2P mesh authenticated by pubkey exchange, not stored credentials.
+              </div>
+            </li>
+            <li>
+              <span class="security__check">✓</span>
+              <div>
+                <strong>Social gate</strong> — agents draft, humans approve. Credentials never touch the agent pod. Compromise doesn't cascade.
+              </div>
+            </li>
+            <li>
+              <span class="security__check">✓</span>
+              <div>
+                <strong>Pod Security policies</strong> — baseline enforcement on default namespace, restricted for infrastructure workloads.
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="security__visual">
+          <div class="security__badge">
+            <div class="security__badge-icon">🔒</div>
+            <div class="security__badge-label">Defense in depth</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section class="stack" id="stack">
+    <div class="container">
+      <h2 class="section-title">The stack</h2>
+      <p class="section-sub">Boring technology choices. Interesting architecture.</p>
+
+      <div class="stack__grid">
+        <div class="stack__item">
+          <div class="stack__layer">Runtime</div>
+          <div class="stack__value">Bun + TypeScript</div>
+        </div>
+        <div class="stack__item">
+          <div class="stack__layer">Database</div>
+          <div class="stack__value">SQLite (WAL mode)</div>
+        </div>
+        <div class="stack__item">
+          <div class="stack__layer">Orchestration</div>
+          <div class="stack__value">k3s on Lima / QEMU</div>
+        </div>
+        <div class="stack__item">
+          <div class="stack__layer">CI builds</div>
+          <div class="stack__value">BuildKit + mTLS</div>
+        </div>
+        <div class="stack__item">
+          <div class="stack__layer">Registry</div>
+          <div class="stack__value">registry:2 in-cluster</div>
+        </div>
+        <div class="stack__item">
+          <div class="stack__layer">Git transport</div>
+          <div class="stack__value">P2P mesh (port 7979)</div>
+        </div>
+        <div class="stack__item">
+          <div class="stack__layer">Ingress</div>
+          <div class="stack__value">Cloudflare Tunnel</div>
+        </div>
+        <div class="stack__item">
+          <div class="stack__layer">AI agent</div>
+          <div class="stack__value">Claude Code (Anthropic)</div>
+        </div>
+        <div class="stack__item">
+          <div class="stack__layer">Chat protocol</div>
+          <div class="stack__value">WebSocket over HTTPS</div>
+        </div>
+        <div class="stack__item">
+          <div class="stack__layer">AV streaming</div>
+          <div class="stack__value">WebRTC</div>
+        </div>
+        <div class="stack__item">
+          <div class="stack__layer">Deployment model</div>
+          <div class="stack__value">GitOps (polling, no webhooks)</div>
+        </div>
+        <div class="stack__item">
+          <div class="stack__layer">Hardware</div>
+          <div class="stack__value">Mac mini (self-hosted)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOR WHO -->
+  <section class="audience">
+    <div class="container">
+      <h2 class="section-title">Built for builders</h2>
+      <div class="audience__grid">
+        <div class="audience__card">
+          <div class="audience__icon">👨‍💻</div>
+          <h3>Small teams in delivery mode</h3>
+          <p>You don't need another Jira board. You need a room where work is visible, AI can pull its weight, and shipping is the default activity.</p>
+        </div>
+        <div class="audience__card">
+          <div class="audience__icon">🏠</div>
+          <h3>Self-hosted infrastructure owners</h3>
+          <p>You have a Mac mini and you'd rather run your own stack than pay per seat for SaaS tools you don't fully control.</p>
+        </div>
+        <div class="audience__card">
+          <div class="audience__icon">🔬</div>
+          <h3>AI-native developers</h3>
+          <p>You want AI agents as first-class team members — not a chat widget bolted onto your editor, but a collaborator with real Git access and persistent context.</p>
+        </div>
+        <div class="audience__card">
+          <div class="audience__icon">📦</div>
+          <h3>Bun ecosystem builders</h3>
+          <p>The chat, ChatOps, and web framework packages are published to npm. Build on top of them, extend them, or run them standalone.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <div class="cta__inner">
+        <h2>Ready to build together?</h2>
+        <p>Everything you need to run a self-hosted, AI-native dev platform on your own hardware.</p>
+        <div class="cta__actions">
+          <a href="https://github.com/devchitchat/infra" class="btn btn--primary btn--lg" target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <span class="logo-mark">dc</span>
+        <span class="logo-name">devchitchat</span>
+      </div>
+      <div class="footer__links">
+        <a href="https://github.com/devchitchat/infra" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
