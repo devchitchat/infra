@@ -155,6 +155,10 @@ function verifyControlToken(req: Request): Response | null {
 
 const server = Bun.serve({
   port: PROXY_PORT,
+  // Bun's default maxRequestBodySize is 128 MiB. Image layers can be several
+  // GiB, so remove the limit — the proxy streams bodies through without
+  // buffering them (duplex: 'half' on the upstream fetch).
+  maxRequestBodySize: Number.MAX_SAFE_INTEGER,
   async fetch(req) {
     const url    = new URL(req.url)
     const method = req.method

@@ -2,24 +2,16 @@
 # Build and push mesh-ci-runner to the in-cluster registry, then restart the deployment.
 # Run from the repo root: ./cicd/mesh-ci-runner/deploy.sh
 set -euo pipefail
+# shellcheck source=../deploy-lib.sh
+source "$(dirname "$0")/../deploy-lib.sh"
 
 REGISTRY="host.docker.internal:5001"
 IMAGE="${REGISTRY}/mesh-ci-runner:latest"
 
-# Ensure port-forward to the in-cluster registry is alive.
-if ! curl -sf "http://127.0.0.1:5001/v2/" >/dev/null 2>&1; then
-  echo "Starting port-forward to registry..."
-  kubectl port-forward --address 0.0.0.0 svc/registry -n mesh-system 5001:5000 &>/tmp/pf-registry.log &
-  PF_PID=$!
-  for i in $(seq 1 15); do
-    sleep 1
-    curl -sf "http://127.0.0.1:5001/v2/" >/dev/null 2>&1 && break
-    [ "$i" -eq 15 ] && { echo "ERROR: registry port-forward did not become ready"; kill $PF_PID 2>/dev/null; exit 1; }
-  done
-  echo "Port-forward ready (PID $PF_PID)"
-fi
+ensure_registry_portforward
 
 docker build -t "${IMAGE}" ./cicd/mesh-ci-runner
 docker push "${IMAGE}"
+verify_push "mesh-ci-runner" "latest"
 kubectl rollout restart deployment/mesh-ci-runner -n ci
 kubectl rollout status deployment/mesh-ci-runner -n ci --timeout=120s
