@@ -18,7 +18,7 @@ ENV HOME=/home/mesh \
 RUN curl -fsSL https://raw.githubusercontent.com/kaizen-hq/mesh/main/install.sh \
       -o /tmp/mesh-install.sh \
     && echo "mesh install.sh sha256: $(sha256sum /tmp/mesh-install.sh)" \
-    && MESH_REF=v5.9.0 bash /tmp/mesh-install.sh \
+    && MESH_REF=v6.0.0 bash /tmp/mesh-install.sh \
     && rm /tmp/mesh-install.sh
 
 COPY --chown=mesh:mesh entrypoint.sh /entrypoint.sh
