@@ -44,7 +44,11 @@ async function connectMeshSse(): Promise<void> {
   while (true) {
     try {
       console.log(`[session] connecting to mesh SSE at ${url}`)
-      const res = await fetch(url, { headers: { Accept: 'text/event-stream' } })
+      const res = await fetch(url, {
+        headers: { Accept: 'text/event-stream' },
+        // @ts-ignore — Bun-specific: mesh uses a self-signed cert on localhost
+        tls: { rejectUnauthorized: false },
+      })
       if (!res.ok || !res.body) {
         console.error(`[session] SSE connect failed: ${res.status} — retrying in 5s`)
         await Bun.sleep(5_000)
