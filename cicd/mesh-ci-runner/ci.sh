@@ -1,7 +1,7 @@
 #!/bin/bash
-# Build and push mesh-ci-runner to the in-cluster registry, pin the digest in
-# the platform repo, and apply the updated manifest.
-# Run from the repo root: ./cicd/mesh-ci-runner/deploy.sh
+# Build and publish mesh-ci-runner to the in-cluster registry.
+# Pins the new image digest in the platform repo — apply from there.
+# Run from the repo root: ./cicd/mesh-ci-runner/ci.sh
 set -euo pipefail
 # shellcheck source=../deploy-lib.sh
 source "$(dirname "$0")/../deploy-lib.sh"
@@ -19,7 +19,3 @@ verify_push "mesh-ci-runner" "latest"
 
 DIGEST=$(get_image_digest "mesh-ci-runner" "latest")
 pin_platform_image "mesh-ci-runner" "${DIGEST}" "${PLATFORM_YAML}"
-# Apply drives the rollout — the digest change is what triggers it, so
-# rollout restart is not needed. Commit the updated YAML to the platform repo.
-kubectl apply -f "${PLATFORM_YAML}"
-kubectl rollout status deployment/mesh-ci-runner -n ci --timeout=120s
