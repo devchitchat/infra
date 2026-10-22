@@ -129,3 +129,62 @@ for layer in m.get('layers', []):
 
   echo "OK: ${image_name}:${tag} — all blobs present"
 }
+
+# get_image_digest <image-name> <tag>
+#
+# Returns the content digest (sha256:...) for <image-name>:<tag> from the
+# local registry via the port-forward at http://127.0.0.1:5001.
+# Works for both OCI image indexes (multi-platform) and single manifests.
+# Must be called after ensure_registry_portforward.
+get_image_digest() {
+  local image_name="$1"
+  local tag="${2:-latest}"
+  local registry="http://127.0.0.1:5001"
+  local accepts="application/vnd.oci.image.index.v1+json,application/vnd.oci.image.manifest.v1+json,application/vnd.docker.distribution.manifest.v2+json"
+
+  local digest
+  digest=$(curl -sf -I -H "Accept: ${accepts}" \
+    "${registry}/v2/${image_name}/manifests/${tag}" \
+    | grep -i "^docker-content-digest:" \
+    | tr -d '\r' \
+    | awk '{print $2}')
+
+  if [ -z "${digest}" ]; then
+    echo "ERROR: could not retrieve digest for ${image_name}:${tag}" >&2
+    return 1
+  fi
+
+  echo "${digest}"
+}
+
+# pin_platform_image <image-name> <digest> <yaml-file>
+#
+# Updates <yaml-file> to pin registry.local:5000/<image-name>:latest to the
+# given digest. Replaces any existing @sha256:... suffix, or a bare :latest
+# with no digest. Fails if no matching image reference is found in the file.
+#
+# Day 2: when you add a new image to the platform deployment, add a
+# corresponding call to this function in that image's deploy script.
+pin_platform_image() {
+  local image_name="$1"
+  local digest="$2"
+  local yaml_file="$3"
+
+  IMAGE_NAME="${image_name}" DIGEST="${digest}" YAML_FILE="${yaml_file}" \
+  python3 -c "
+import re, os, sys
+image = 'registry.local:5000/' + os.environ['IMAGE_NAME'] + ':latest'
+digest = os.environ['DIGEST']
+path = os.environ['YAML_FILE']
+with open(path) as f:
+    content = f.read()
+pattern = re.escape(image) + r'(@sha256:[a-f0-9]+)?'
+new_content = re.sub(pattern, image + '@' + digest, content)
+if new_content == content:
+    print('ERROR: no match for ' + image + ' in ' + path, file=sys.stderr)
+    sys.exit(1)
+with open(path, 'w') as f:
+    f.write(new_content)
+print('Pinned ' + image + '@' + digest)
+"
+}
