@@ -18,7 +18,12 @@ RUN ARCH=$(dpkg --print-architecture) \
     && apt-get update && apt-get install -y docker-ce-cli docker-buildx-plugin \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m -u 1001 -s /bin/bash mesh
+RUN useradd -m -u 1001 -s /bin/bash mesh \
+    # Dedicated jobs user: no home dir, no shell, isolated from ~/.mesh.
+    # Shell jobs run as this uid so they cannot read keys/, mesh.toml, or
+    # push-token-hash even if the worktree is on the same filesystem.
+    # uid=65533 is the conventional "nobody-like" uid for unprivileged workers.
+    && useradd -r -u 65533 -g nogroup -s /sbin/nologin mesh-jobs
 
 # Copy bun from the official image instead of running curl | bash.
 RUN mkdir -p /home/mesh/.bun/bin

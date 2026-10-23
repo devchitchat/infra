@@ -25,6 +25,20 @@ else
   sed -i '/^\[runner\]/a env_passthrough = ["REGISTRY_HOST", "GITOPS_REPO_URL", "BUILDKIT_HOST", "BUILDX_BUILDER"]' ~/.mesh/mesh.toml
 fi
 
+# Run shell jobs as mesh-jobs (uid=65533, gid=65534 / nogroup) so they cannot
+# read ~/.mesh even on the same filesystem. Requires CAP_SETUID + CAP_SETGID
+# in the container's securityContext (see deployment.yaml).
+if grep -q '^jobs_uid' ~/.mesh/mesh.toml; then
+  sed -i 's/^jobs_uid = .*/jobs_uid = 65533/' ~/.mesh/mesh.toml
+else
+  sed -i '/^\[runner\]/a jobs_uid = 65533' ~/.mesh/mesh.toml
+fi
+if grep -q '^jobs_gid' ~/.mesh/mesh.toml; then
+  sed -i 's/^jobs_gid = .*/jobs_gid = 65534/' ~/.mesh/mesh.toml
+else
+  sed -i '/^\[runner\]/a jobs_gid = 65534' ~/.mesh/mesh.toml
+fi
+
 # Configure docker buildx to use the BuildKit sidecar as the default builder.
 # There is no Docker daemon in this pod — we write the buildx config files directly
 # so that "docker buildx build" can reach buildkitd without daemon involvement.
