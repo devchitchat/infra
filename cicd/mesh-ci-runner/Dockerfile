@@ -39,7 +39,7 @@ ENV HOME=/home/mesh \
 RUN curl -fsSL https://raw.githubusercontent.com/kaizen-hq/mesh/main/install.sh \
       -o /tmp/mesh-install.sh \
     && echo "mesh install.sh sha256: $(sha256sum /tmp/mesh-install.sh)" \
-    && MESH_REF=v7.7.0 bash /tmp/mesh-install.sh \
+    && MESH_REF=v7.8.0 bash /tmp/mesh-install.sh \
     && rm /tmp/mesh-install.sh
 
 # Grant the mesh binary file capabilities so uid=1001 can spawn child
