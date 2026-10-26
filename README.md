@@ -20,8 +20,6 @@ cicd/
     deploy.sh                   Build + push + rollout restart (restarts apps-controller too)
   mesh-node/                    generic mesh P2P daemon sidecar (used by controllers and agent)
     deploy.sh                   Build + push + rollout restart
-  registry-proxy/               push-scoping proxy: enforces per-repo image name restrictions
-    deploy.sh                   Build + push + rollout restart
 
 src/                            infra CLI source (TypeScript / Bun)
 cli.ts                          CLI entry point
@@ -39,10 +37,9 @@ Mac Mini boot
                     │     ├── mesh-gitops-controller  polls platform.git every 30s, applies infra/
                     │     └── apps-controller         polls mesh-gitops.git every 30s, applies apps/
                     ├── ci/
-                    │     └── mesh-ci-runner pod
-                    │           ├── mesh              CI runner (shell mode, bun + docker CLI)
-                    │           ├── registry-proxy    push-scoping proxy on :5050
-                    │           └── buildkitd         BuildKit daemon on :1234 (mTLS, privileged)
+                    │     ├── mesh-ci-runner pod
+                    │     │     └── mesh              CI runner (bun + docker CLI)
+                    │     └── buildkitd pod           BuildKit daemon on :1234 (mTLS, standalone)
                     ├── apps/
                     │     └── ... apps               managed by GitOps (apps-controller)
                     └── default/
@@ -51,9 +48,7 @@ Mac Mini boot
 
 **Deployments go through GitOps.** Push a manifest change to the `mesh-gitops` repo and the controller applies it within 30s. Images are built by the CI runner when commits land on the mesh network.
 
-**CI image push scoping.** Each pipeline can only push images whose name matches its repo. The `registry-proxy` subscribes to the mesh daemon's global CI SSE stream (`GET /ci/events`). When a run transitions to `running` on this runner, the proxy opens a session for that repo; when the run completes it closes it. Pipelines never hold the control token and cannot influence session state.
-
-**BuildKit mTLS.** A `gen-buildkit-certs` initContainer generates a per-pod CA and cert pair at startup. buildkitd and buildx both require mutual TLS so arbitrary code inside the pod cannot connect to buildkitd without the client certificate. buildkitd runs `privileged: true` — required on k3s/containerd for bind mounts from the runc-native snapshot store.
+**BuildKit mTLS + NetworkPolicy.** buildkitd runs in its own pod. A one-time `buildkitd-cert-gen` Job generates a CA, server cert, and client cert, writing them to the `buildkitd-certs` Secret. buildkitd mounts the server cert; the mesh-ci-runner mounts the client cert. A NetworkPolicy restricts port 1234 to `app: mesh-ci-runner` pods only — mTLS provides a second layer so even a misconfigured policy cannot be exploited without the client certificate.
 
 **Mesh P2P network** (kaizen-hq/mesh v5.7.1) connects the host, ci-runner, controllers, and agent. Each node serves git repos over self-signed HTTPS at port 7979. Controllers and the agent run `mesh-node` as a sidecar; the CI runner bundles mesh into its own image.
 
@@ -131,7 +126,6 @@ Each script handles the port-forward automatically if it isn't already running. 
 | Component | Script | Restarts |
 |---|---|---|
 | mesh-node | `./cicd/mesh-node/deploy.sh` | `apps-controller` + `mesh-gitops-controller` (mesh-system) |
-| registry-proxy | `./cicd/registry-proxy/deploy.sh` | `mesh-ci-runner` (ci) |
 | mesh-ci-runner | `./cicd/mesh-ci-runner/deploy.sh` | `mesh-ci-runner` (ci) |
 | mesh-gitops-controller | `./cicd/mesh-gitops-controller/deploy.sh` | `mesh-gitops-controller` + `apps-controller` (mesh-system) |
 
@@ -145,14 +139,17 @@ cd ../devchitchat
 kubectl apply -f platform/infra/apps-controller/rbac.yaml   # if RBAC changed
 kubectl apply -f platform/infra/ci-runner/deployment.yaml   # if pod spec changed
 
-# 2. Build and push images (order matters: mesh-ci-runner last)
+# 2. Build and push images
 cd ../infra
-./cicd/registry-proxy/deploy.sh
 ./cicd/mesh-gitops-controller/deploy.sh
-./cicd/mesh-ci-runner/deploy.sh   # last: entrypoint depends on volumes from the spec above
+./cicd/mesh-ci-runner/deploy.sh
+
+# 3. Apply buildkitd resources (cert-gen Job, Deployment, Service, NetworkPolicy)
+cd ../devchitchat
+kubectl apply -f platform/infra/ci-runner/buildkitd.yaml
 ```
 
-`./cicd/mesh-ci-runner/deploy.sh` must come after the deployment spec is applied because `entrypoint.sh` reads mTLS cert paths (`/certs/ca.pem` etc.) that are only present when the `gen-buildkit-certs` initContainer and `buildkit-certs` volume mount are live.
+Apply `buildkitd.yaml` before rolling the mesh-ci-runner pod so the `buildkitd-certs` Secret exists when the pod starts.
 
 ### Updating the mesh-node sidecar
 

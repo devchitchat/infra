@@ -6,7 +6,7 @@ Oct 5, 2026 · @Joey
 
 k3s ships Flannel as its default CNI. Flannel handles pod routing but silently ignores `NetworkPolicy` objects — the API server accepts them, but nothing enforces them.
 
-`platform/infra/registry/network-policy.yaml` restricts direct access to `registry.mesh-system.svc.cluster.local:5000` to only the `mesh-ci-runner` pod in the `ci` namespace. Without an enforcing CNI, that file is inert and any pod in the cluster can push directly to the upstream registry, bypassing the registry-proxy entirely.
+`platform/infra/registry/network-policy.yaml` restricts direct access to `registry.mesh-system.svc.cluster.local:5000` to only the `mesh-ci-runner` pod in the `ci` namespace. Without an enforcing CNI, that file is inert and any pod in the cluster can push directly to the upstream registry. Similarly, `platform/infra/ci-runner/buildkitd.yaml` restricts buildkitd (port 1234) to `mesh-ci-runner` only — also inert without an enforcing CNI.
 
 Cilium replaces Flannel as the CNI and enforces `NetworkPolicy` natively. It is the path the k3s docs recommend when policy enforcement is needed, and it has a maintained Helm chart with first-class k3s support.
 
@@ -109,16 +109,25 @@ kubectl run test --rm -it --image=curlimages/curl --restart=Never -- \
 
 Expect: connection timeout or refused (not a 200).
 
-**4. Policy allows the proxy** — exec into the `mesh-ci-runner` pod and confirm the proxy path still works
+**4. Policy allows the runner** — confirm mesh-ci-runner can still reach the registry directly
 
 ```
-kubectl exec -n ci deploy/mesh-ci-runner -c registry-proxy -- \
+kubectl exec -n ci deploy/mesh-ci-runner -- \
   wget -qO- http://registry.mesh-system.svc.cluster.local:5000/v2/
 ```
 
 Expect: `{}` (empty catalog response from the registry).
 
-**5. Run a CI build** and confirm an image pushes end-to-end through the proxy.
+**5. Policy allows buildkitd access** — confirm mesh-ci-runner can reach buildkitd
+
+```
+kubectl exec -n ci deploy/mesh-ci-runner -- \
+  nc -zv buildkitd.ci.svc.cluster.local 1234
+```
+
+Expect: connection succeeds.
+
+**6. Run a CI build** and confirm an image pushes end-to-end.
 
 ## Rollback
 
