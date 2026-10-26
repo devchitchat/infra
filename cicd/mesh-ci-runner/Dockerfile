@@ -18,12 +18,7 @@ RUN ARCH=$(dpkg --print-architecture) \
     && apt-get update && apt-get install -y docker-ce-cli docker-buildx-plugin \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m -u 1001 -s /bin/bash mesh \
-    # Dedicated jobs user: no home dir, no shell, isolated from ~/.mesh.
-    # Shell jobs run as this uid so they cannot read keys/, mesh.toml, or
-    # push-token-hash even if the worktree is on the same filesystem.
-    # uid=65533 is the conventional "nobody-like" uid for unprivileged workers.
-    && useradd -r -u 65533 -g nogroup -s /sbin/nologin mesh-jobs
+RUN useradd -m -u 1001 -s /bin/bash mesh
 
 # Copy bun from the official image instead of running curl | bash.
 RUN mkdir -p /home/mesh/.bun/bin
@@ -39,19 +34,9 @@ ENV HOME=/home/mesh \
 RUN curl -fsSL https://raw.githubusercontent.com/kaizen-hq/mesh/main/install.sh \
       -o /tmp/mesh-install.sh \
     && echo "mesh install.sh sha256: $(sha256sum /tmp/mesh-install.sh)" \
-    && MESH_REF=v9.0.0 bash /tmp/mesh-install.sh \
+    && MESH_REF=v9.1.0 bash /tmp/mesh-install.sh \
     && rm /tmp/mesh-install.sh
 
-# Grant the mesh binary file capabilities so uid=1001 can spawn child
-# processes as a different uid (jobs_uid=65533) via Bun.spawn { uid, gid }.
-# File capabilities are applied at exec time by the kernel and survive the
-# runtime's setuid(1001) call. This requires no_new_privs=0 in the pod
-# securityContext (i.e. allowPrivilegeEscalation must not be set to false).
-USER root
-RUN apt-get update && apt-get install -y --no-install-recommends libcap2-bin \
-    && rm -rf /var/lib/apt/lists/* \
-    && setcap 'cap_setuid,cap_setgid=ep' /home/mesh/.local/bin/mesh
-USER mesh
 
 COPY --chown=mesh:mesh entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
